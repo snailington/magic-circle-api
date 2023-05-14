@@ -24,3 +24,44 @@ export function onMessage(startTime: number | undefined, callback: (msg: MsgRPC[
     OBR.room.getMetadata().then(update);
     return OBR.room.onMetadataChange(update);
 }
+
+// escape html and potentially truncate submitted text
+function sanitizeText(unsafe: string, maxSize = -1) {
+    let text = unsafe.replaceAll(/[<>&"']/g, (c) => {
+        switch(c) {
+            case '&': return "&amp;";
+            case '<': return "&lt;";
+            case '>': return "&gt;";
+            case '"': return "&quot";
+            case '\'': return "&#39";
+            default: return c;
+        }
+    });
+
+    if(maxSize >= 0 && text.length > maxSize) text = text.substring(0, maxSize);
+    return text;
+}
+
+/*
+ * Send a message over the magic circle message channel.
+ * @param msg - The message to be sent.
+ */
+export async function sendMessage(msg: MsgRPC) {
+    const metadata = await OBR.room.getMetadata();
+    const rawMessages = metadata[MC_MESSAGES_PATH];
+    const roomBuffer: MsgRPC[] = rawMessages instanceof Array ? rawMessages : [];
+
+    roomBuffer.push({
+        cmd: "msg",
+        time: msg.time || Date.now(),
+        type: msg.type,
+        text: sanitizeText(msg.text),
+        author: msg.author != undefined ? sanitizeText(msg.author) : undefined,
+        metadata: msg.metadata
+    });
+    if(roomBuffer.length >= 5) roomBuffer.shift();
+
+    const update: Partial<any> = {};
+    update[MC_MESSAGES_PATH] = roomBuffer;
+    await OBR.room.setMetadata(update);
+}
