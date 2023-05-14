@@ -1,8 +1,9 @@
-import {onMessage, sendMessage} from "./src/client";
+import {findPlayer, onMessage, sendMessage} from "./src/client";
 
 const MagicCircle = {
     onMessage: onMessage,
-    sendMessage: sendMessage
+    sendMessage: sendMessage,
+    findPlayer: findPlayer
 }
 
 export default MagicCircle;
