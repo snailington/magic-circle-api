@@ -25,23 +25,6 @@ export function onMessage(startTime: number | undefined, callback: (msg: MsgRPC[
     return OBR.room.onMetadataChange(update);
 }
 
-// escape html and potentially truncate submitted text
-function sanitizeText(unsafe: string, maxSize = -1) {
-    let text = unsafe.replaceAll(/[<>&"']/g, (c) => {
-        switch(c) {
-            case '&': return "&amp;";
-            case '<': return "&lt;";
-            case '>': return "&gt;";
-            case '"': return "&quot";
-            case '\'': return "&#39";
-            default: return c;
-        }
-    });
-
-    if(maxSize >= 0 && text.length > maxSize) text = text.substring(0, maxSize);
-    return text;
-}
-
 /*
  * Send a message over the magic circle message channel.
  * @param msg - The message to be sent.
@@ -55,8 +38,8 @@ export async function sendMessage(msg: any) {
         cmd: "msg",
         time: msg.time || Date.now(),
         type: msg.type || "chat",
-        text: msg.text != undefined ? sanitizeText(msg.text): "",
-        author: msg.author != undefined ? sanitizeText(msg.author) : undefined,
+        text: msg.text != undefined ? msg.text.substring(0, 200) : "",
+        author: msg.author != undefined ? msg.author.substring(0, 64) : undefined,
         metadata: msg.metadata
     });
     if(roomBuffer.length >= 5) roomBuffer.shift();
