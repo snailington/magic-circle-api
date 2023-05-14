@@ -34,8 +34,8 @@ export async function sendMessage(msg: string | Partial<MsgRPC>) {
     const rawMessages = metadata[MC_MESSAGES_PATH];
     const roomBuffer: MsgRPC[] = rawMessages instanceof Array ? rawMessages : [];
 
-    let rawMsg: Partial<MsgRPC> = msg instanceof String ?
-        { text: msg as string } : msg as Partial<MsgRPC>;
+    let rawMsg: Partial<MsgRPC> = typeof msg == "string" ?
+        { text: msg } : msg;
 
     if(rawMsg.author == undefined)
         rawMsg.author = await OBR.player.getName();
