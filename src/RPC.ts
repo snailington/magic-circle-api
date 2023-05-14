@@ -140,6 +140,13 @@ export interface MsgRPC extends RPC {
     // other associations players have claimed.
     author?: string,
     
+    //   Person that the message is directed to, frontends should not display
+    // the message to anyone else if this field is present.  Note that this is
+    // just hidden communication, not private, because anyone cn still look at
+    // the Owlbear metadata.  Subject to the same player auto-association as
+    // the author field.
+    whisper?: string,
+
     // Optional additional data to be passed
     metadata?: any
 }
