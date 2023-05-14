@@ -46,7 +46,7 @@ function sanitizeText(unsafe: string, maxSize = -1) {
  * Send a message over the magic circle message channel.
  * @param msg - The message to be sent.
  */
-export async function sendMessage(msg: MsgRPC) {
+export async function sendMessage(msg: any) {
     const metadata = await OBR.room.getMetadata();
     const rawMessages = metadata[MC_MESSAGES_PATH];
     const roomBuffer: MsgRPC[] = rawMessages instanceof Array ? rawMessages : [];
@@ -54,8 +54,8 @@ export async function sendMessage(msg: MsgRPC) {
     roomBuffer.push({
         cmd: "msg",
         time: msg.time || Date.now(),
-        type: msg.type,
-        text: sanitizeText(msg.text),
+        type: msg.type || "chat",
+        text: msg.text != undefined ? sanitizeText(msg.text): "",
         author: msg.author != undefined ? sanitizeText(msg.author) : undefined,
         metadata: msg.metadata
     });
