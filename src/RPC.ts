@@ -17,7 +17,7 @@ export interface OpenRPC extends RPC {
     room: string,
 
     // Any other data that the user configured to be sent
-    data: any | undefined
+    data?: any
 }
 
 // Dispatcher configuration command (requires control permission)
