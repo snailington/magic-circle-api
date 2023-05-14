@@ -36,7 +36,7 @@ export interface GetRPC extends RPC {
     target: TargetType,
 
     // If target == "item", the guid of the item in question
-    item: string | undefined,
+    item?: string,
 
     // Metadata key to retrieve
     key: string,
@@ -51,7 +51,7 @@ export interface SetRPC extends RPC {
     target: TargetType,
 
     // If target == "item", the guid of the item in question
-    item: string | undefined,
+    item?: string,
 
     // Metadata key to set
     key: string,
@@ -86,10 +86,10 @@ export interface MsgRPC extends RPC {
     //   Person message is attributed to.  The dispatcher will atempt to
     // associate author by ID if it looks GUID-like, by player name, or by
     // other associations players have claimed.
-    author: string | undefined,
+    author?: string,
     
     // Optional additional data to be passed
-    metadata: any
+    metadata?: any
 }
 
 // Send a dice roll (requires message or write permission)
@@ -118,14 +118,14 @@ export interface DiceRPC extends MsgRPC {
         dice: Array<number | string>,
 
         // Modifier to be added to the total sum of the dice
-        modifier: number | undefined,
+        modifier?: number,
 
         ///// Predetermined dice rolls:
         // The total outcome of the roll
-        total: number | string | undefined,
+        total?: number | string,
 
         // Individul die results corresponding to the dice array
-        results: Array<number | string> | undefined
+        results?: Array<number | string>
     }
 }
 
@@ -147,7 +147,7 @@ export interface ErrorRPC extends RPC {
     context: string,
 
     // If originating RPC had a reply_id, its copied here
-    reply_id: number | undefined,
+    reply_id?: number,
 
     // Error message
     msg: string
