@@ -29,18 +29,24 @@ export function onMessage(startTime: number | undefined, callback: (msg: MsgRPC[
  * Send a message over the magic circle message channel.
  * @param msg - The message to be sent.
  */
-export async function sendMessage(msg: any) {
+export async function sendMessage(msg: string | Partial<MsgRPC>) {
     const metadata = await OBR.room.getMetadata();
     const rawMessages = metadata[MC_MESSAGES_PATH];
     const roomBuffer: MsgRPC[] = rawMessages instanceof Array ? rawMessages : [];
 
+    let rawMsg: Partial<MsgRPC> = msg instanceof String ?
+        { text: msg as string } : msg as Partial<MsgRPC>;
+
+    if(rawMsg.author == undefined)
+        rawMsg.author = await OBR.player.getName();
+
     roomBuffer.push({
         cmd: "msg",
-        time: msg.time || Date.now(),
-        type: msg.type || "chat",
-        text: msg.text != undefined ? msg.text.substring(0, 200) : "",
-        author: msg.author != undefined ? msg.author.substring(0, 64) : undefined,
-        metadata: msg.metadata
+        time: rawMsg.time || Date.now(),
+        type: rawMsg.type || "chat",
+        text: rawMsg.text != undefined ? rawMsg.text.substring(0, 200) : "",
+        author: rawMsg.author,
+        metadata: rawMsg.metadata
     });
     if(roomBuffer.length >= 5) roomBuffer.shift();
 
