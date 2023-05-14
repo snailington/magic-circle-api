@@ -1,6 +1,7 @@
 import OBR, {Metadata} from "@owlbear-rodeo/sdk"
-import {MsgRPC} from "./RPC";
+import {Message} from "./Message";
 import {MC_MESSAGES_PATH} from "./constants";
+import {MsgRPC} from "./RPC";
 
 /*
  * Register a callback to receive messages via Magic Circle
@@ -12,7 +13,7 @@ export function onMessage(startTime: number | undefined, callback: (msg: MsgRPC[
     let lastTimestamp = startTime || 0;
     function update(metadata: Metadata) {
         const rawMessages = metadata[MC_MESSAGES_PATH];
-        const roomBuffer: MsgRPC[] = rawMessages instanceof Array ? rawMessages : [];
+        const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
         const start = roomBuffer.findIndex((m) => m.time && m.time > lastTimestamp);
         if(start == -1) return;
@@ -29,23 +30,31 @@ export function onMessage(startTime: number | undefined, callback: (msg: MsgRPC[
  * Send a message over the magic circle message channel.
  * @param msg - The message to be sent.
  */
-export async function sendMessage(msg: string | Partial<MsgRPC>) {
+export async function sendMessage(msg: string | Partial<Message>) {
     const metadata = await OBR.room.getMetadata();
     const rawMessages = metadata[MC_MESSAGES_PATH];
-    const roomBuffer: MsgRPC[] = rawMessages instanceof Array ? rawMessages : [];
+    const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
-    let rawMsg: Partial<MsgRPC> = typeof msg == "string" ?
-        { text: msg } : msg;
+    const nextId = roomBuffer.length == 0 ? 0 : roomBuffer[roomBuffer.length-1].id+1;
 
-    if(rawMsg.author == undefined)
-        rawMsg.author = await OBR.player.getName();
+    let rawMsg: Partial<MsgRPC> = typeof msg == "string" ? { text: msg } : msg;
+
+    let author: string, player: string | undefined;
+    if(rawMsg.author == undefined) {
+        author = await OBR.player.getName();
+        player = OBR.player.id;
+    } else {
+        author = rawMsg.author;
+    }
 
     roomBuffer.push({
         cmd: "msg",
-        time: rawMsg.time || Date.now(),
+        id: nextId,
+        time: Date.now(),
         type: rawMsg.type || "chat",
         text: rawMsg.text != undefined ? rawMsg.text.substring(0, 200) : "",
-        author: rawMsg.author,
+        author: author,
+        player: player,
         metadata: rawMsg.metadata
     });
     if(roomBuffer.length >= 5) roomBuffer.shift();
