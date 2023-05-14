@@ -9,3 +9,4 @@ const MagicCircle = {
 export default MagicCircle;
 export * from "./src/constants";
 export * from "./src/RPC";
+export * from "./src/Message";
