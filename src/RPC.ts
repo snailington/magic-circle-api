@@ -1,12 +1,40 @@
+/******************************************************************************
+**    MAGIC CIRCLE RPC PROTOCOL
+**
+**   The interfaces in this file describe the RPC protocol used to communicate
+** between the Magic Circle dispatcher and ingestion servers. This is the most
+** up to date and authoritative documentation for how all this stuff works so
+** give it a scroll. If you have any questions please contact me on the Owlbear
+** discord. - snail
+**
+**
+**   Each interface has some notes on its semantics, here's a key for them:
+** - (client -> server): Sent from the dispatcher to your server.
+** - (client <- server): Magic Circle is prepared to receive this.
+** - (reply expected): Whichever endpoint receives this RPC should reply.
+**                     (at the moment, replies are only needed for (c<-s) RPCs)
+** - (may reply):  RPC may result in a reply. If it doesn't have one of these
+**                two notes, a reply is NOT expected and is an error.
+** - (requires x permission):  If the dispatcher receives a RPC that requires
+**                            the stated permission on a bridge that does not
+**                            have it set, an error will be generated.
+**
+******************************************************************************/
+
+/*
+ * The basic interface from which all other RPCs derive
+ */
 export interface RPC {
-    cmd:
-        "open" | "config" | "ping" | "pong" |
-        "set" | "set-item" | "get" | "msg" |
-        "reply" |
-        "error"
+    cmd: "open" | "config" | "ping" | "pong" |
+         "set" | "set-item" | "get" | "msg" |
+         "reply" |
+         "error"
 }
 
-// Sent from Magic Circle immediately after bridge is opened.
+/*
+ * Sent from Magic Circle immediately after connection established.
+ * @remarks (client -> server)
+ */
 export interface OpenRPC extends RPC {
     cmd: "open",
 
@@ -20,7 +48,10 @@ export interface OpenRPC extends RPC {
     data?: any
 }
 
-// Dispatcher configuration command (requires control permission)
+/*
+  * Manage some aspect of the dispatcher's configuration.
+  * @remarks (client <- server) (requires control permission)
+  */
 export interface ConfigRPC extends RPC {
     cmd: "config",
     subcmd: "reload",
@@ -29,10 +60,14 @@ export interface ConfigRPC extends RPC {
 
 type TargetType = "room" | "scene" | "item" | "player";
 
-// Get a value stored in metadata (expects reply) (requires read permission)
+/*
+ * Retrieve a value stored somewhere in metadata.
+ * @remarks (client <- server) (reply expected) (required read permission)
+ */
 export interface GetRPC extends RPC {
     cmd: "get",
 
+    // Where the metadata is stored
     target: TargetType,
 
     // If target == "item", the guid of the item in question
@@ -45,7 +80,10 @@ export interface GetRPC extends RPC {
     reply_id: number
 }
 
-// Set a value stored in metadata (requires write permission)
+/*
+ * Set a value stored in metadata.
+ * @remarks (client <- server) (requires write permission)
+ */
 export interface SetRPC extends RPC {
     cmd: "set",
     target: TargetType,
@@ -60,7 +98,10 @@ export interface SetRPC extends RPC {
     value: any
 }
 
-// Set a property associated with an item (requires write permission)
+/*
+ * Set an Item's properties
+ * @remarks (client <- server) (requires write permission)
+ */
 export interface SetItemRPC extends RPC {
     cmd: "set-item",
 
@@ -75,9 +116,20 @@ export interface SetItemRPC extends RPC {
     value: any
 }
 
-// Send a message (requires message or write permission)
+/*
+ * Post a message to the message buffer
+ * @remarks (client <- server) (requires message permission)
+ */
 export interface MsgRPC extends RPC {
     cmd: "msg",
+    // The type of message represented, and the subclass of RPC that can be
+
+    /*
+     *  The type of message represented
+     * - chat: A human generated chat message
+     * - dice: Dice roll information (cast to DiceRPC or DiceMessage)
+     * - info: System generated informational message
+     */
     type: "chat" | "dice" | "info",
 
     // Body of the message
@@ -92,20 +144,21 @@ export interface MsgRPC extends RPC {
     metadata?: any
 }
 
+// Information about one set of dice rolled
 export interface RollInfo {
     /*
-         * The kind of dice roll being communicated.
-         *
-         *  This value is largely arbitrary and dependent on the system being
-         * rolled, however effort should be made to use consistent terminology
-         * so frontends can act on rolls. Recommendations:
-         *
-         *  - "check": ability/skill checks
-         *  - "initiative": initiative rolls
-         *  - "attack": to hit rolls
-         *  - "damage": damage rolls
-         *  - "save": saving throws
-         */
+     * The kind of dice roll being communicated.
+     *
+     *  This value is largely arbitrary and dependent on the system being
+     * rolled, however effort should be made to use consistent terminology
+     * so frontends can act on rolls. Recommendations:
+     *
+     *  - "check": ability/skill checks
+     *  - "initiative": initiative rolls
+     *  - "attack": to hit rolls
+     *  - "damage": damage rolls
+     *  - "save": saving throws
+     */
     kind: string,
 
     // An array of the types of all the individual dice to be rolled
@@ -123,7 +176,10 @@ export interface RollInfo {
     results?: Array<number | string>
 }
 
-// Send a dice roll (requires message or write permission)
+/*
+ * Post a dice roll to the message buffer.
+ * @remarks (client <- server) (requires message permission)
+ */
 export interface DiceRPC extends MsgRPC {
     cmd: "msg",
     type: "dice",
@@ -131,7 +187,10 @@ export interface DiceRPC extends MsgRPC {
     metadata: RollInfo;
 }
 
-// Reply to a previous RPC 
+/*
+ * A reply to a previous NPC.
+ * @remarks (client -> server)
+ */
 export interface ReplyRPC extends RPC {
     cmd: "reply",
 
@@ -142,6 +201,10 @@ export interface ReplyRPC extends RPC {
     data: any
 }
 
+/*
+ * Error notification.
+ * @remarks (client <-> server)
+ */
 export interface ErrorRPC extends RPC {
     cmd: "error",
 
