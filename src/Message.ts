@@ -1,4 +1,4 @@
-import {MsgRPC} from "./RPC";
+import {MsgRPC, RollInfo} from "./RPC";
 
 // A message stored in the Magic Circle message bus
 export interface Message extends MsgRPC {
@@ -8,4 +8,8 @@ export interface Message extends MsgRPC {
     time: number,
     // The player associated with this message or undefined if player unknown
     player: string | undefined,
+}
+
+export interface DiceMessage extends Message {
+    metadata: RollInfo
 }

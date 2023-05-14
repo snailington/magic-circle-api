@@ -92,13 +92,8 @@ export interface MsgRPC extends RPC {
     metadata?: any
 }
 
-// Send a dice roll (requires message or write permission)
-export interface DiceRPC extends MsgRPC {
-    cmd: "msg",
-    type: "dice",
-    
-    metadata: {
-        /*
+export interface RollInfo {
+    /*
          * The kind of dice roll being communicated.
          *
          *  This value is largely arbitrary and dependent on the system being
@@ -111,22 +106,29 @@ export interface DiceRPC extends MsgRPC {
          *  - "damage": damage rolls
          *  - "save": saving throws
          */
-        kind: string,
+    kind: string,
 
-        // An array of the types of all the individual dice to be rolled
-        // When a number, the size of the die, when a string an arbitrary identifier for the die type
-        dice: Array<number | string>,
+    // An array of the types of all the individual dice to be rolled
+    // When a number, the size of the die, when a string an arbitrary identifier for the die type
+    dice: Array<number | string>,
 
-        // Modifier to be added to the total sum of the dice
-        modifier?: number,
+    // Modifier to be added to the total sum of the dice
+    modifier?: number,
 
-        ///// Predetermined dice rolls:
-        // The total outcome of the roll
-        total?: number | string,
+    ///// Predetermined dice rolls:
+    // The total outcome of the roll
+    total?: number | string,
 
-        // Individul die results corresponding to the dice array
-        results?: Array<number | string>
-    }
+    // Individul die results corresponding to the dice array
+    results?: Array<number | string>
+}
+
+// Send a dice roll (requires message or write permission)
+export interface DiceRPC extends MsgRPC {
+    cmd: "msg",
+    type: "dice",
+
+    metadata: RollInfo;
 }
 
 // Reply to a previous RPC 
