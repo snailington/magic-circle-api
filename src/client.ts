@@ -9,7 +9,7 @@ import {MsgRPC} from "./RPC";
  * @param callback - Called with each new message received
  * @return A cleanup function, suitable for use with React's useEffect()
  */
-export function onMessage(startTime: number | undefined, callback: (msg: MsgRPC[])=>void) {
+export function onMessage(startTime: number | undefined, callback: (msg: Message[])=>void) {
     let lastTimestamp = startTime || 0;
     function update(metadata: Metadata) {
         const rawMessages = metadata[MC_MESSAGES_PATH];
