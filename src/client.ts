@@ -5,20 +5,20 @@ import {MsgRPC} from "./RPC";
 
 /*
  * Register a callback to receive messages via Magic Circle
- * @param startTime - Only messages posted after this timestamp will be passed to callback
+ * @param mostRecent - Only messages posted after this message will be sent to client
  * @param callback - Called with each new message received
  * @return A cleanup function, suitable for use with React's useEffect()
  */
-export function onMessage(startTime: number | undefined, callback: (msg: Message[])=>void) {
-    let lastTimestamp = startTime || 0;
+export function onMessage(mostRecent: Message | null, callback: (msg: Message[])=>void) {
+    let lastId = mostRecent?.id || -1;
     function update(metadata: Metadata) {
         const rawMessages = metadata[MC_MESSAGES_PATH];
         const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
-        const start = roomBuffer.findIndex((m) => m.time && m.time > lastTimestamp);
+        const start = roomBuffer.findIndex((m) => m.id > lastId);
         if(start == -1) return;
 
-        lastTimestamp = roomBuffer[roomBuffer.length-1].time || Date.now();
+        lastId = roomBuffer[roomBuffer.length-1].id;
         callback(roomBuffer.slice(start));
     }
 
