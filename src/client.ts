@@ -28,40 +28,48 @@ export function onMessage(mostRecent: Message | null, callback: (msg: Message[])
 
 /*
  * Send a message over the magic circle message channel.
- * @param msg - The message to be sent.
+ *
+ *  Always batch if multiple messages are to be sent in sequence to
+ *  prevent messages dropped to Owlbear's own metadata update batching.
+ *
+ * @param msg - The message(s) to be sent.
  */
-export async function sendMessage(msg: string | Partial<MsgRPC>) {
+export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Partial<MsgRPC>)[]) {
     const metadata = await OBR.room.getMetadata();
     const rawMessages = metadata[MC_MESSAGES_PATH];
     const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
-    let rawMsg: Partial<MsgRPC> = typeof msg == "string" ? { text: msg } : msg;
 
-    // Author/player attribution
-    let author: string, player: string | undefined;
-    if(rawMsg.author == undefined) {
-        author = await OBR.player.getName();
-        player = OBR.player.id;
-    } else {
-        const found = await findPlayer(rawMsg.author);
-        if(found) {
-            author = found.name;
-            player = found.id;
+    const batch = msg instanceof Array ? msg : [msg];
+    for(const msg of batch) {
+        let rawMsg: Partial<MsgRPC> = typeof msg == "string" ? { text: msg } : msg;
+
+        // Author/player attribution
+        let author: string, player: string | undefined;
+        if(rawMsg.author == undefined) {
+            author = await OBR.player.getName();
+            player = OBR.player.id;
         } else {
-            author = rawMsg.author;
+            const found = await findPlayer(rawMsg.author);
+            if(found) {
+                author = found.name;
+                player = found.id;
+            } else {
+                author = rawMsg.author;
+            }
         }
-    }
 
-    // Generate a new sanitized cooked message and post it to the bus
-    const nextId = roomBuffer.length == 0 ? 0 : roomBuffer[roomBuffer.length-1].id+1;
-    roomBuffer.push({
-        cmd: "msg",
-        id: nextId, time: Date.now(),
-        type: rawMsg.type || "chat",
-        text: rawMsg.text != undefined ? rawMsg.text.substring(0, 200) : "",
-        author: author, player: player,
-        metadata: rawMsg.metadata
-    });
-    if(roomBuffer.length >= 5) roomBuffer.shift();
+        // Generate a new sanitized cooked message and post it to the bus
+        const nextId = roomBuffer.length == 0 ? 0 : roomBuffer[roomBuffer.length-1].id+1;
+        roomBuffer.push({
+            cmd: "msg",
+            id: nextId, time: Date.now(),
+            type: rawMsg.type || "chat",
+            text: rawMsg.text != undefined ? rawMsg.text.substring(0, 200) : "",
+            author: author, player: player,
+            metadata: rawMsg.metadata
+        });
+        if(roomBuffer.length >= 5) roomBuffer.shift();
+    }
 
     const update: Partial<any> = {};
     update[MC_MESSAGES_PATH] = roomBuffer;
