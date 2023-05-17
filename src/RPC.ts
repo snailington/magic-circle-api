@@ -173,13 +173,13 @@ export interface RollInfo {
     dice: Array<number | string>,
 
     // Modifier to be added to the total sum of the dice
-    modifier?: number,
+    modifier: number,
 
-    ///// Predetermined dice rolls:
-    // The total outcome of the roll
+    // When a roll is predetermined, the total outcome of the roll
+    // When a number, a sum of the results and modifier, when a string an arbitrary identifier
     total?: number | string,
 
-    // Individul die results corresponding to the dice array
+    // When a roll is predetermined, the results of each die corresponding to the dice array
     results?: Array<number | string>
 }
 
