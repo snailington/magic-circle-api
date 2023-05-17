@@ -39,9 +39,12 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
     const rawMessages = metadata[MC_MESSAGES_PATH];
     const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
+    console.log("sendMessage() batch", msg);
+
     const batch = msg instanceof Array ? msg : [msg];
     for(const msg of batch) {
-        let rawMsg: Partial<MsgRPC> = typeof msg == "string" ? { text: msg } : msg;
+        console.log("->", batch, msg);
+        let rawMsg: Partial<MsgRPC> = typeof msg === "string" ? { text: msg } : msg;
 
         // Author/player attribution
         let author: string, player: string | undefined;
