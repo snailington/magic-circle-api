@@ -2,6 +2,7 @@ import OBR, {Metadata, Player} from "@owlbear-rodeo/sdk"
 import {Message} from "./Message";
 import {MC_MESSAGES_PATH, MC_PLAYER_ALIAS_PATH} from "./constants";
 import {MsgRPC} from "./RPC";
+import {isGuid} from "./utility.ts";
 
 /*
  * Register a callback to receive messages via Magic Circle
@@ -56,7 +57,7 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
 
             const found = await findPlayer(rawMsg.author);
             if(found) {
-                author = found.name;
+                if(isGuid(rawMsg.author)) author = found.name;
                 player = found.id;
             }
         }
