@@ -70,7 +70,7 @@ export interface GetRPC extends RPC {
     // Where the metadata is stored
     target: TargetType,
 
-    // If target == "item", the guid of the item in question
+    // If target == "item", An Owlbear ItemFilter describing the items to retrieve
     item?: string,
 
     // Metadata key to retrieve
@@ -88,8 +88,8 @@ export interface SetRPC extends RPC {
     cmd: "set",
     target: TargetType,
 
-    // If target == "item", the guid of the item in question
-    item?: string,
+    // If target == "item", an Owlbear ItemFilter describing the items to modify
+    item?: any,
 
     // Metadata key to set
     key: string,
@@ -105,8 +105,8 @@ export interface SetRPC extends RPC {
 export interface SetItemRPC extends RPC {
     cmd: "set-item",
 
-    // The ID of the item in question
-    item: string,
+    // An Owlbear ItemFilter describing the items to modify
+    item: any,
 
     // The property being set
     key: "name" | "visible" | "locked" | "zIndex" | "position" | "rotation" |
