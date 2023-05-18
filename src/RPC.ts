@@ -24,6 +24,8 @@
 /*
  * The basic interface from which all other RPCs derive
  */
+import {ItemFilter} from "@owlbear-rodeo/sdk";
+
 export interface RPC {
     cmd: "open" | "config" | "ping" | "pong" |
          "set" | "set-item" | "get" | "msg" |
@@ -70,8 +72,8 @@ export interface GetRPC extends RPC {
     // Where the metadata is stored
     target: TargetType,
 
-    // If target == "item", An Owlbear ItemFilter describing the items to retrieve
-    item?: string,
+    // If target == "item", a filter or search string describing the items to retireve
+    item?: ItemFilter<any> | string,
 
     // Metadata key to retrieve
     key: string,
@@ -88,8 +90,8 @@ export interface SetRPC extends RPC {
     cmd: "set",
     target: TargetType,
 
-    // If target == "item", an Owlbear ItemFilter describing the items to modify
-    item?: any,
+    // If target == "item", a filter or search string describing the items to modify
+    item?: ItemFilter<any> | string,
 
     // Metadata key to set
     key: string,
@@ -105,8 +107,8 @@ export interface SetRPC extends RPC {
 export interface SetItemRPC extends RPC {
     cmd: "set-item",
 
-    // An Owlbear ItemFilter describing the items to modify
-    item: any,
+    // A filter or search string describing the items to modify
+    item: ItemFilter<any> | string,
 
     // The property being set
     key: "name" | "visible" | "locked" | "zIndex" | "position" | "rotation" |
