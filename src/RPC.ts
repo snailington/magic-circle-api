@@ -124,7 +124,6 @@ export interface SetItemRPC extends RPC {
  */
 export interface MsgRPC extends RPC {
     cmd: "msg",
-    // The type of message represented, and the subclass of RPC that can be
 
     /*
      *  The type of message represented

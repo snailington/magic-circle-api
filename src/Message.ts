@@ -9,7 +9,7 @@
 import {MsgRPC, RollInfo} from "./RPC";
 
 /*
- * A message of some kind, in general.
+ * A human readable message of some kind, in general.
  */
 export interface Message extends MsgRPC {
     // Unique, monotonically increasing, identifier for this message
@@ -24,5 +24,6 @@ export interface Message extends MsgRPC {
  * A message containing information about a dice roll.
  */
 export interface DiceMessage extends Message {
+    type: "dice",
     metadata: RollInfo
 }

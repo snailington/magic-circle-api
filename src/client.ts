@@ -81,7 +81,7 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
 
 /*
  * Attempt to find a player by name, player ID, or assigned player aliases.
- * @return The player ID associated with the subject string.
+ * @return The player ID associated with the subject string or undefined if no player found.
  */
 export async function findPlayer(subject: string): Promise<Player | undefined> {
     //   In multiple passes, we first try to find a player by id, then by name, then by
