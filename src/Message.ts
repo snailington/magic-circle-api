@@ -16,8 +16,10 @@ export interface Message extends MsgRPC {
     id: number,
     // Timestamp that message was sent
     time: number,
-    // The player associated with this message or undefined if player unknown
-    player: string | undefined,
+    // Name attributed to this message by the source. Often a character name.
+    author: string,
+    // Player ID associated with this message or undefined if player unknown
+    player: string,
 }
 
 /*

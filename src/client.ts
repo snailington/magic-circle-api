@@ -66,7 +66,7 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
             id: nextId, time: Date.now(),
             type: rawMsg.type || "chat",
             text: rawMsg.text != undefined ? rawMsg.text.substring(0, 200) : "",
-            author: author, player: player,
+            author: author, player: player || OBR.player.id,
             metadata: rawMsg.metadata
         });
         if(roomBuffer.length >= 5) roomBuffer.shift();
