@@ -182,8 +182,15 @@ export interface RollInfo {
     // When a number, the size of the die, when a string an arbitrary identifier for the die type
     dice: Array<number | string>,
 
-    // Modifier to be added to the total sum of the dice
-    modifier: number,
+    /*
+     * The suffix component of the dicestring that represents this roll.
+     * Source-defined but likely in a format such as:
+     *
+     *   ((kh|kl)\d*)?([+-]\d+)
+     *
+     * Containing an operator like kh/kl for keep highest/lowest and a modifier
+    */
+    suffix: string
 
     // When a roll is predetermined, the total outcome of the roll
     // When a number, a sum of the results and modifier, when a string an arbitrary identifier
