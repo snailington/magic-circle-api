@@ -170,6 +170,15 @@ export interface RollInfo {
      */
     kind: string,
 
+    /*
+     *  Miscellaneous tags to give additional context to this roll that
+     * clients may be interested in. An example of this might be in 5e,
+     * "advantage" or "disadvantage".  Lower priority information than the roll
+     * kind, and frontends should not need to worry about comprehensively
+     * intrepeting every tag.
+     */
+    tags?: string[],
+
     // An array of the types of all the individual dice to be rolled
     // When a number, the size of the die, when a string an arbitrary identifier for the die type
     dice: Array<number | string>,
