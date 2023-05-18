@@ -1,5 +1,5 @@
 import OBR, {Metadata, Player} from "@owlbear-rodeo/sdk"
-import {Message} from "./Message";
+import {DiceMessage, Message} from "./Message";
 import {MC_ROOM_MESSAGES_PATH, MC_PLAYER_ALIAS_PATH} from "./constants";
 import {MsgRPC} from "./RPC";
 import {isGuid} from "./utility";
@@ -75,6 +75,21 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
     const update: Partial<any> = {};
     update[MC_ROOM_MESSAGES_PATH] = roomBuffer;
     await OBR.room.setMetadata(update);
+}
+
+/*
+ * Build a human readable dicestring from a DiceMessage
+ */
+export function toDiceString(message: DiceMessage): string {
+    let diceString = "";
+
+    for(const diceType of new Set(message.metadata.dice)) {
+        const count = message.metadata.dice.reduce((acc: number, d) => d == diceType ? acc + 1 : 0, 0);
+        diceString += `${count}d${diceType} `;
+    }
+    diceString = diceString.trimEnd() + message.metadata.suffix;
+
+    return diceString;
 }
 
 /*
