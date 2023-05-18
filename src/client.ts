@@ -1,6 +1,6 @@
 import OBR, {Metadata, Player} from "@owlbear-rodeo/sdk"
 import {Message} from "./Message";
-import {MC_MESSAGES_PATH, MC_PLAYER_ALIAS_PATH} from "./constants";
+import {MC_ROOM_MESSAGES_PATH, MC_PLAYER_ALIAS_PATH} from "./constants";
 import {MsgRPC} from "./RPC";
 import {isGuid} from "./utility";
 
@@ -13,7 +13,7 @@ import {isGuid} from "./utility";
 export function onMessage(mostRecent: Message | null, callback: (msg: Message[])=>void) {
     let lastId = mostRecent?.id || -1;
     function update(metadata: Metadata) {
-        const rawMessages = metadata[MC_MESSAGES_PATH];
+        const rawMessages = metadata[MC_ROOM_MESSAGES_PATH];
         const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
         const start = roomBuffer.findIndex((m) => m.id > lastId);
@@ -37,7 +37,7 @@ export function onMessage(mostRecent: Message | null, callback: (msg: Message[])
  */
 export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Partial<MsgRPC>)[]) {
     const metadata = await OBR.room.getMetadata();
-    const rawMessages = metadata[MC_MESSAGES_PATH];
+    const rawMessages = metadata[MC_ROOM_MESSAGES_PATH];
     const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
     const batch = msg instanceof Array ? msg : [msg];
@@ -73,7 +73,7 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
     }
 
     const update: Partial<any> = {};
-    update[MC_MESSAGES_PATH] = roomBuffer;
+    update[MC_ROOM_MESSAGES_PATH] = roomBuffer;
     await OBR.room.setMetadata(update);
 }
 
