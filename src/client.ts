@@ -2,7 +2,7 @@ import OBR, {Metadata, Player} from "@owlbear-rodeo/sdk"
 import {Message} from "./Message";
 import {MC_MESSAGES_PATH, MC_PLAYER_ALIAS_PATH} from "./constants";
 import {MsgRPC} from "./RPC";
-import {isGuid} from "./utility.ts";
+import {isGuid} from "./utility";
 
 /*
  * Register a callback to receive messages via Magic Circle
@@ -40,11 +40,8 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
     const rawMessages = metadata[MC_MESSAGES_PATH];
     const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
 
-    console.log("sendMessage() batch", msg);
-
     const batch = msg instanceof Array ? msg : [msg];
     for(const msg of batch) {
-        console.log("->", batch, msg);
         let rawMsg: Partial<MsgRPC> = typeof msg === "string" ? { text: msg } : msg;
 
         // Author/player attribution
