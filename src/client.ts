@@ -87,7 +87,7 @@ export function toDiceString(message: DiceMessage): string {
         const count = message.metadata.dice.reduce((acc: number, d) => d == diceType ? acc + 1 : 0, 0);
         diceString += `${count}d${diceType} `;
     }
-    diceString = diceString.trimEnd() + message.metadata.suffix;
+    diceString = diceString.trimEnd() + (message.metadata.suffix || "");
 
     return diceString;
 }
