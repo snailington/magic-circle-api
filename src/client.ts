@@ -52,12 +52,12 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
             author = await OBR.player.getName();
             player = OBR.player.id;
         } else {
+            author = rawMsg.author;
+
             const found = await findPlayer(rawMsg.author);
             if(found) {
                 author = found.name;
                 player = found.id;
-            } else {
-                author = rawMsg.author;
             }
         }
 
