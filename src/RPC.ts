@@ -112,7 +112,7 @@ export interface SetItemRPC extends RPC {
 
     // The property being set
     key: "name" | "visible" | "locked" | "zIndex" | "position" | "rotation" |
-        "scale" | "layer" | "attacHedTo" | "disableHit" | "disableAutoZIndex",
+        "scale" | "layer" | "attachedTo" | "disableHit" | "disableAutoZIndex",
 
     // The new value of the property
     value: any
