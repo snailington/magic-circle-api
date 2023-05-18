@@ -152,7 +152,7 @@ export interface MsgRPC extends RPC {
     metadata?: any
 }
 
-// Information about one set of dice rolled
+// Information about a dice roll
 export interface RollInfo {
     /*
      * The kind of dice roll being communicated.
