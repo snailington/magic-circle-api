@@ -101,3 +101,40 @@ export async function findPlayer(subject: string): Promise<Player | undefined> {
     }
     return;
 }
+
+/*
+ * Add an alias to the current player's list of claimed aliases.
+ * Messages attributed to this alias will become associated with this player.
+ * @param alias - The alias to claim.
+ */
+export async function claimAlias(alias: string) : Promise<void> {
+    const metadata = await OBR.player.getMetadata();
+    let aliases: any = metadata[MC_PLAYER_ALIAS_PATH];
+    if(!aliases || !(aliases instanceof Array)) aliases = new Array<string>()
+    else aliases = Array.from(aliases);
+
+    if(aliases.find((a: string) => a == alias)) return;
+
+    aliases.push(alias);
+    const updated: Partial<Metadata> = {};
+    updated[MC_PLAYER_ALIAS_PATH] = aliases;
+    await OBR.player.setMetadata(updated);
+}
+
+/*
+ * Remove an alias from the current player's list of claimed aliases.
+ */
+export async function unclaimAlias(alias: string) : Promise<void> {
+    const metadata = await OBR.player.getMetadata();
+    let aliases: any = metadata[MC_PLAYER_ALIAS_PATH];
+    if(!aliases || !(aliases instanceof Array)) aliases = new Array<string>();
+    else aliases = Array.from(aliases);
+
+    const idx = aliases.findIndex((a: string) => a == alias);
+    if(idx == -1) return;
+
+    aliases.splice(idx, 1);
+    const updated: Partial<Metadata> = {};
+    updated[MC_PLAYER_ALIAS_PATH] = aliases;
+    await OBR.player.setMetadata(updated);
+}
