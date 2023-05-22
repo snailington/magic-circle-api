@@ -84,7 +84,7 @@ export function toDiceString(rollInfo: RollInfo): string {
     let diceString = "";
 
     for(const diceType of new Set(rollInfo.dice)) {
-        const count = rollInfo.dice.reduce((acc: number, d) => d == diceType ? acc + 1 : 0, 0);
+        const count = rollInfo.dice.reduce((acc: number, d) => d == diceType ? acc + 1 : acc, 0);
         diceString += `${count}d${diceType} `;
     }
     diceString = diceString.trimEnd() + (rollInfo.suffix || "");
