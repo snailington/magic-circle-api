@@ -40,3 +40,13 @@ test("dice 2d10 3d20", () => {
     
     expect(diceString).toBe("2d10 3d20");
 });
+
+test("dice 3dweird", () => {
+   const diceString = toDiceString({
+       kind: "test",
+       dice: ["weird", "weird", "weird"],
+       suffix: ""
+   });
+
+   expect(diceString).toBe("3dweird");
+});
