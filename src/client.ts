@@ -20,7 +20,7 @@ export function onMessage(mostRecent: Message | null, callback: (msg: Message[])
         if(start == -1) return;
 
         lastId = roomBuffer[roomBuffer.length-1].id;
-        callback(roomBuffer.slice(start));
+        callback(roomBuffer.slice(start).filter((m) => !m.whisper || m.whisper == OBR.player.id));
     }
 
     OBR.room.getMetadata().then(update);
