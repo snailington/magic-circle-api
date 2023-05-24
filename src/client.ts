@@ -78,16 +78,19 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
 }
 
 /*
- * Build a human readable dicestring from a DiceMessage
+ * Build a human readable dicestring from a message's RollInfo
+ * @param rollInfo - the roll from which the dice string will be constructed
+ * @param suffix - if true, suffix will be included
  */
-export function toDiceString(rollInfo: RollInfo): string {
+export function toDiceString(rollInfo: RollInfo, suffix = true): string {
     let diceString = "";
 
     for(const diceType of new Set(rollInfo.dice)) {
         const count = rollInfo.dice.reduce((acc: number, d) => d == diceType ? acc + 1 : acc, 0);
         diceString += `${count}d${diceType} `;
     }
-    diceString = diceString.trimEnd() + (rollInfo.suffix || "");
+    diceString = diceString = diceString.trimEnd();
+    if(suffix) diceString += (rollInfo.suffix || "");
 
     return diceString;
 }
