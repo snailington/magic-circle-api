@@ -34,8 +34,10 @@ export function onMessage(mostRecent: Message | null, callback: (msg: Message[])
  *  prevent messages dropped to Owlbear's own metadata update batching.
  *
  * @param msg - The message(s) to be sent.
+ * @param player - Player to which the message will be assigned, or leave
+ *   undefined for auto attribution.
  */
-export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Partial<MsgRPC>)[]) {
+export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Partial<MsgRPC>)[], player?: string) {
     const metadata = await OBR.room.getMetadata();
     const rawMessages = metadata[MC_ROOM_MESSAGES_PATH];
     const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
@@ -45,17 +47,19 @@ export async function sendMessage(msg: string | Partial<MsgRPC> | (string | Part
         let rawMsg: Partial<MsgRPC> = typeof msg === "string" ? { text: msg } : msg;
 
         // Author/player attribution
-        let author: string, player: string | undefined;
+        let author: string
         if(rawMsg.author == undefined) {
             author = await OBR.player.getName();
-            player = OBR.player.id;
+            if(player == undefined) player = OBR.player.id;
         } else {
             author = rawMsg.author;
 
-            const found = await findPlayer(rawMsg.author);
-            if(found) {
-                if(isGuid(rawMsg.author)) author = found.name;
-                player = found.id;
+            if(player == undefined) {
+                const found = await findPlayer(rawMsg.author);
+                if(found) {
+                    if(isGuid(rawMsg.author)) author = found.name;
+                    player = found.id;
+                }
             }
         }
 
