@@ -11,7 +11,7 @@ import {isGuid} from "./utility";
  * @return A cleanup function, suitable for use with React's useEffect()
  */
 export function onMessage(mostRecent: Message | null, callback: (msg: Message[])=>void) {
-    let lastId = mostRecent?.id || -1;
+    let lastId = mostRecent ? mostRecent.id : -1;
     function update(metadata: Metadata) {
         const rawMessages = metadata[MC_ROOM_MESSAGES_PATH];
         const roomBuffer: Message[] = rawMessages instanceof Array ? rawMessages : [];
